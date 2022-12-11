@@ -1,5 +1,5 @@
-use minilz77::lz77::{lz77_compress, lz77_uncompress};
+use minilz77::lz77::*;
 
 fn main() {
-    println!("Hello, world!");
+    println!("hello")
 }
