@@ -13,5 +13,3 @@ The performance should be compared to other compression tools, such as `gzip` or
 This is a university assignment, but it's also a personal project for learning to code in Rust.
 
 ---
-
-> TODO

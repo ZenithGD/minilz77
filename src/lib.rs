@@ -1,9 +1,7 @@
 mod lz77;
 
-use std::io::Read;
 use std::str;
 
-use bitvec::vec::BitVec;
 use bitvec::view::AsBits;
 use lz77::compress::write_phrases;
 use lz77::decompress::read_phrases;

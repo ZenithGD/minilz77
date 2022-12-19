@@ -1,4 +1,3 @@
-use bitvec::ptr::read;
 use bitvec::vec::BitVec;
 use bitvec::prelude::*;
 

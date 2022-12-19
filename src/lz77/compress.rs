@@ -1,5 +1,4 @@
 use std::str;
-
 use bitvec::vec::BitVec;
 use bitvec::prelude::*;
 
@@ -62,6 +61,9 @@ pub fn write_phrases(str : &Vec<u8>) -> BitVec<u8> {
     let mut v = bitvec![u8, Lsb0;];
     // last compressed byte index
     let mut n: usize = 0;
+
+    let mut next_prog = 0.0;
+
     while n < s {
 
         let (i, l, c) = build_phrase(str, n);
@@ -71,6 +73,12 @@ pub fn write_phrases(str : &Vec<u8>) -> BitVec<u8> {
         //println!("Appending bits {:?} for phrase {:?}", bits, (i, l, c));
         v.append(&mut bits);
         n += l + 1;
+
+        let prog = n as f64 / s as f64;
+        if next_prog < prog {
+            println!("{:.2} %", prog);
+            next_prog += 0.01;
+        }
     }
 
     return v;
@@ -78,10 +86,6 @@ pub fn write_phrases(str : &Vec<u8>) -> BitVec<u8> {
 
 #[test]
 fn test_phrase_to_bits() {
-    for i in 1 .. 16 {
-        let ln = (i as f32).log2() as usize + 1;
-        println!("{} -> {}", i, ln);
-    }
     
     let bits = phrase_to_bits((2, 3, 'A' as u8), 4);
 
