@@ -1,12 +1,30 @@
 mod lz77;
 
-use minilz77::lz77_compress;
+use std::env;
+
+use minilz77::{lz77_compress, lz77_decompress};
 
 fn main() {
-    let str = "hi".bytes().collect();
-    let compressed = lz77_compress(&str);
+    if env::args().len() < 1 {
+        panic!("Error : please enter file");
+    }
 
-    println!("compressed bitvec {:?}", compressed);
+    match std::fs::read(env::args().nth(1).unwrap()) {
+        Ok(bytes) => {
+            let original = bytes.len() as f32;
+            let str_compressed = lz77_compress(&bytes);
+            let compressed = str_compressed.len() as f32;
 
-    println!("hello")
+            println!("Compression ratio : {}", original / compressed);
+
+            assert_eq!(lz77_decompress(&str_compressed), bytes);
+        }
+        Err(e) => {
+            if e.kind() == std::io::ErrorKind::PermissionDenied {
+                eprintln!("please run again with appropriate permissions.");
+                return;
+            }
+            panic!("{}", e);
+        }
+    }
 }

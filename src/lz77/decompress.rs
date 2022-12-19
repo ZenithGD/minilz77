@@ -2,11 +2,10 @@ use bitvec::ptr::read;
 use bitvec::vec::BitVec;
 use bitvec::prelude::*;
 
-fn bits_to_phrase(bits : &BitVec, n : u32) -> (usize, usize, u8) {
+fn bits_to_phrase(bits : &BitVec<u8>, n : usize) -> (usize, usize, u8) {
 
-    let ln = (n as f32).log2().ceil() as usize;
-
-    println!("ln = {}", ln);
+    //println!("Got bits {:?}", bits);
+    let ln = (n as f32).log2() as usize + 1;
     if bits.len() != 2 * ln + 8 {
         panic!("Length doesn't match");
     } 
@@ -20,24 +19,49 @@ fn bits_to_phrase(bits : &BitVec, n : u32) -> (usize, usize, u8) {
 
 pub fn read_phrases(bits : &BitVec<u8>) -> Vec<u8> {
 
-    let output : Vec<u8> = vec![];
+    let mut output : Vec<u8> = vec![];
+
+    //println!("bits len : {}", bits.len());
 
     //bits.into_vec() for bits into a vec<u8>
+    let mut n : usize = 1;
+    let mut idx : usize = 0;
+    loop {
+        let ln = (n as f32).log2() as usize + 1;
+
+        if idx + 2 * ln + 8 > bits.len() {
+            break;
+        }
+        
+        //println!("n = {}, idx = {}, ln = {}", n, idx, ln);
+
+        let (i, l, s) = bits_to_phrase(&bits.get(idx .. idx + 2 * ln + 8).unwrap().to_bitvec(), n);
+
+        //println!("Found phrase : {:?}", (i, l, s));
+
+        for k in 0 .. l {
+            output.push(output[n - i + k - 1]);
+        }
+
+        output.push(s);
+        idx += 2 * ln + 8;
+        n += l + 1;
+    }
 
     return output
 }
 
 #[test]
 fn test_bits_to_phrase() {
-    let bits = bitvec![0, 1, 0, 1, 1, 0, 1, 0, 0, 0, 0, 0, 1, 0];
+    let bits = bitvec![u8, Lsb0; 0, 1, 0, 1, 1, 0, 1, 0, 0, 0, 0, 0, 1, 0];
 
     assert_eq!(bits_to_phrase(&bits, 4), (2, 3, 'A' as u8));
 
-    let bits2 = bitvec![0, 0, 1, 0, 0, 0, 0, 0, 1, 0];
+    let bits2 = bitvec![u8, Lsb0; 0, 0, 1, 0, 0, 0, 0, 0, 1, 0];
 
     assert_eq!(bits_to_phrase(&bits2, 1), (0, 0, 'A' as u8));
 
-    let bits3 = bitvec![1, 1, 1, 1, 0, 1, 0, 1, 0, 0, 0, 0, 1, 0];
+    let bits3 = bitvec![u8, Lsb0; 1, 1, 1, 1, 0, 1, 0, 1, 0, 0, 0, 0, 1, 0];
 
     assert_eq!(bits_to_phrase(&bits3, 7), (7, 5, 'B' as u8));
 }
