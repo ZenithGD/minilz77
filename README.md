@@ -3,6 +3,8 @@
 Tiny implementation of the LZ77 compression algorithm, written in Rust
 ![Build Status](https://github.com/ZenithGD/minilz77/actions/workflows/rust.yml/badge.svg?branch=master&event=push)
 
+Link to this repo [here](https://github.com/ZenithGD/minilz77)
+
 ---
 
 ## Task
